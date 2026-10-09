@@ -242,8 +242,8 @@
 /* ============================================================
    PROGRAM DATA  -  transcribed from Gus Blessmann's plan
    Body + Soul Fitness, Forest Hill. 2 sessions / week.
-   Block: open-ended, alternating Day 1 / Day 2.
-   Same bench prescription every session - ramp, then 5 x 5.
+   Solo program: 8 weeks, Day 1 + Day 2 each week.
+   Bench ramp climbs every 2 weeks; work sets differ by day.
    ============================================================ */
 
 const WARMUP = [
@@ -254,38 +254,59 @@ const WARMUP = [
 ];
 
 // Bench press neural warm-up - ramp-up sets before the work sets.
-// Same ramp every session in this block.
-const NEURAL = [{w:65,r:5},{w:82.5,r:5},{w:102.5,r:3},{w:115,r:1}];
-function neuralFor(){ return NEURAL; }
+// Same on both days; the loads step up every two weeks.
+const RAMP = {
+  "1-2":[{w:70,r:5},{w:90,r:5},{w:110,r:3},{w:125,r:1}],
+  "3-4":[{w:75,r:5},{w:97.5,r:5},{w:117.5,r:3},{w:132.5,r:1}],
+  "5-6":[{w:80,r:5},{w:102.5,r:5},{w:125,r:3},{w:142.5,r:1}],
+  "7-8":[{w:85,r:5},{w:110,r:5},{w:135,r:3},{w:150,r:1}]
+};
+function neuralFor(week){
+  if(week<=2) return RAMP["1-2"];
+  if(week<=4) return RAMP["3-4"];
+  if(week<=6) return RAMP["5-6"];
+  return RAMP["7-8"];
+}
 
-// Bench press work sets - same prescription every session.
+// Bench press work sets, by week and day.
 // sets = number of work sets, reps = reps per set, w = weight (LB)
-const BENCH = {sets:5, reps:5, w:127.5};
-function benchFor(){ return BENCH; }
+const BENCH = {
+  "1-1":{sets:5,reps:3,w:137.5},  "1-2":{sets:5,reps:4,w:137.5},
+  "2-1":{sets:5,reps:5,w:137.5},  "2-2":{sets:5,reps:6,w:137.5},
+  "3-1":{sets:5,reps:3,w:147.5},  "3-2":{sets:5,reps:4,w:147.5},
+  "4-1":{sets:5,reps:4,w:147.5},  "4-2":{sets:5,reps:5,w:147.5},
+  "5-1":{sets:5,reps:2,w:157.5},  "5-2":{sets:5,reps:3,w:157.5},
+  "6-1":{sets:5,reps:3,w:157.5},  "6-2":{sets:5,reps:4,w:157.5},
+  "7-1":{sets:5,reps:2,w:167.5},  "7-2":{sets:5,reps:3,w:167.5},
+  "8-1":{sets:4,reps:3,w:167.5},  "8-2":{sets:4,reps:3,w:167.5}
+};
+function benchFor(week,day){ return BENCH[week+"-"+day] || BENCH["1-1"]; }
+
+const TOTAL_WEEKS = 8;
+const TOTAL_SESSIONS = TOTAL_WEEKS*2;
 
 // Accessory blocks. group = superset pairing letter.
-// timed:true means the "reps" number is SECONDS, not repetitions,
-// and the exercise is left out of volume totals.
+// timed:true means the "reps" number is SECONDS, not repetitions.
+// unit:"kg" switches the weight field's label; only lb work counts toward volume.
 const DAY1 = {
-  label:"Full Body",
+  label:"Full Body A",
   accessories:[
     {id:"B1",name:"FFE Split Squat – Cable",sets:3,reps:8,w:30,group:"B"},
     {id:"B2",name:"Chin-Up",sets:3,reps:8,w:0,note:"Body weight",group:"B"},
     {id:"C1",name:"Incline DB Press",sets:3,reps:8,w:30,note:"Two-second pause at the bottom",group:"C"},
-    {id:"C2",name:"Seated Leg Curl",sets:3,reps:8,w:90,group:"C"},
-    {id:"D",name:"Push Sled",sets:4,reps:40,w:200,note:"40 seconds per push",group:"D",timed:true}
+    {id:"C2",name:"Donkey Hyperextension",sets:3,reps:8,w:90,group:"C"},
+    {id:"D",name:"Half-Kneeling KB Press",sets:3,reps:8,w:16,unit:"kg",group:"D"},
+    {id:"E",name:"Push Sled",sets:4,reps:40,w:200,note:"40 seconds per push",group:"E",timed:true}
   ]
 };
 const DAY2 = {
-  label:"Upper Body",
+  label:"Full Body B",
   accessories:[
-    {id:"B",name:"Unilateral Incline Chest Press",sets:4,reps:8,w:35,group:"B"},
-    {id:"C",name:"Pulldown – Wide Grip",sets:3,reps:8,w:110,group:"C"},
-    {id:"D1",name:"Seated Shoulder Press",sets:3,reps:8,w:35,group:"D"},
-    {id:"D2",name:"Seated Calf Raises",sets:3,reps:8,w:120,group:"D"},
-    {id:"E1",name:"Biceps Curl – Dumbbell Alternated",sets:3,reps:10,w:25,group:"E"},
-    {id:"E2",name:"Triceps – Skull Crusher (Unilateral)",sets:3,reps:10,w:20,group:"E"},
-    {id:"F",name:"Lateral Raises (Unilateral)",sets:3,reps:10,w:20,group:"F"}
+    {id:"B1",name:"Trap Bar Deadlift",sets:3,reps:8,w:160,group:"B"},
+    {id:"B2",name:"Seated Shoulder Press – DB",sets:3,reps:8,w:40,group:"B"},
+    {id:"C1",name:"Leg Extension – Unilateral",sets:3,reps:8,w:50,group:"C"},
+    {id:"C2",name:"Seated Row – Unilateral",sets:3,reps:8,w:50,group:"C"},
+    {id:"D",name:"Pull Sled – TRX",sets:4,reps:40,w:250,note:"40 seconds per pull",group:"D",timed:true}
   ]
 };
 function blockFor(day){ return day===2 ? DAY2 : DAY1; }
@@ -298,24 +319,37 @@ function dayName(day){ return day===2 ? "Day 2" : "Day 1"; }
 const STORE_KEY = "gusUpperPlan.v2";
 let mem = null; // in-memory fallback
 
+const BLOCK_ID = "solo-8wk";     // bump when a new program starts
+
 const defaultState = ()=>({
-  day:1,                         // which day of the pair comes next
+  block:BLOCK_ID,
+  week:1, day:1,                 // position in the 8-week cycle
+  programDone:false,
   settings:{rest:120},
   history:[],                    // completed sessions
   active:null                    // in-progress session, or null
 });
 
-// Carry a saved state from the old Weeks 9-12 block into this one.
-// History is kept; the week counter and any half-finished session are not,
-// because the exercises underneath them changed.
+// Carry a saved state from an earlier block into this one.
+// History is kept; the position and any half-finished session are reset,
+// because the exercises and loads underneath them changed.
 function migrate(s){
   if(!s || typeof s!=="object") return defaultState();
   const out = Object.assign(defaultState(), s);
-  if("week" in out || "programDone" in out){
-    delete out.week;
-    delete out.programDone;
+  if(s.block !== BLOCK_ID){          // saved before this block existed
+    out.block = BLOCK_ID;
+    out.week = 1;
+    out.day = 1;
+    out.programDone = false;
     out.active = null;
   }
+  // Never resume a session whose shape no longer matches the program
+  const a = out.active;
+  if(a && (typeof a.week!=="number" || !Array.isArray(a.acc) ||
+           a.acc.length !== blockFor(a.day).accessories.length)){
+    out.active = null;
+  }
+  out.week = Math.min(TOTAL_WEEKS, Math.max(1, parseInt(out.week,10)||1));
   out.day = (out.day===2) ? 2 : 1;
   if(!Array.isArray(out.history)) out.history = [];
   if(!out.settings || typeof out.settings.rest!=="number") out.settings={rest:120};
@@ -341,14 +375,14 @@ let state = load();
    WORKOUT SESSION HELPERS
    ============================================================ */
 
-// Build a fresh in-progress session object for the current day
-function newSession(day){
+// Build a fresh in-progress session object for the current week/day
+function newSession(week,day){
   const block = blockFor(day);
-  const bench = benchFor();
+  const bench = benchFor(week,day);
   return {
-    startedAt:Date.now(), day, blockLabel:block.label,
+    startedAt:Date.now(), week, day, blockLabel:block.label,
     warmup: WARMUP.map(()=>false),
-    neural: neuralFor().map(()=>false),
+    neural: neuralFor(week).map(()=>false),
     bench:  Array.from({length:bench.sets},()=>({done:false, reps:bench.reps, w:bench.w})),
     acc:    block.accessories.map(a=>(
       {id:a.id, sets:Array.from({length:a.sets},()=>({done:false, reps:a.reps, w:a.w}))}
@@ -367,7 +401,10 @@ function totalSetsDone(s){
 
 // Advance current position after finishing a session
 function advance(){
-  state.day = (state.day===1) ? 2 : 1;
+  if(state.day===1){ state.day=2; return; }
+  state.day=1;
+  if(state.week>=TOTAL_WEEKS){ state.programDone=true; return; }
+  state.week++;
 }
 
 /* ============================================================
@@ -440,17 +477,30 @@ function fmtW(n){ return (Number.isInteger(n)?n:n.toFixed(1)); }
 
 function renderToday(){
   const s=el("screen");
-  const d=state.day;
-  const block=blockFor(d), bench=benchFor(), neural=neuralFor();
-  const sessionsDone=state.history.length;
+  if(state.programDone){
+    s.innerHTML=`
+      <div class="card hero fade">
+        <div class="wk">Block complete</div>
+        <div class="title">All 8 weeks done</div>
+        <div class="sub">Every session in the solo program is logged. Time to ask Gus for the next block — until then you can repeat a week from Settings.</div>
+        <button class="btn sec" onclick="goTab('progress')">See your progress</button>
+      </div>`;
+    return;
+  }
+  const w=state.week, d=state.day;
+  const block=blockFor(d), bench=benchFor(w,d), neural=neuralFor(w);
+  const sessionsDone=state.history.filter(x=>x.block===BLOCK_ID).length;
+  const pct=Math.round(sessionsDone/TOTAL_SESSIONS*100);
   const last=state.history[state.history.length-1];
   const sub = `Bench press ${bench.sets}×${bench.reps} @ ${fmtW(bench.w)} lb, then ${block.accessories.length} accessory lifts`;
 
   s.innerHTML=`
     <div class="card hero fade">
-      <div class="wk">Session ${sessionsDone+1} &nbsp;·&nbsp; ${esc(dayName(d))}</div>
+      <div class="wk">Week ${w} &nbsp;·&nbsp; ${esc(dayName(d))}</div>
       <div class="title">${esc(block.label)}</div>
       <div class="sub">${sub}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="small muted">${sessionsDone} of ${TOTAL_SESSIONS} sessions in this block</div>
       <div style="height:14px"></div>
       <button class="btn" onclick="startWorkout()">${state.active?"Resume workout":"Start workout"} →</button>
     </div>
@@ -476,15 +526,15 @@ function renderToday(){
 /* ---------- WORKOUT ---------- */
 
 function startWorkout(){
-  if(!state.active) state.active = newSession(state.day);
+  if(!state.active) state.active = newSession(state.week,state.day);
   save(); render(); window.scrollTo(0,0);
 }
 
 function renderWorkout(){
   const a=state.active;
   const block = blockFor(a.day);
-  const bench = benchFor();
-  const neural = neuralFor();
+  const bench = benchFor(a.week,a.day);
+  const neural = neuralFor(a.week);
   const {d,t}=totalSetsDone(a);
   const s=el("screen");
 
@@ -494,7 +544,7 @@ function renderWorkout(){
 
   let html=`
     <div class="card hero" style="padding:14px 16px">
-      <div class="wk">Session ${state.history.length+1} · ${esc(dayName(a.day))}</div>
+      <div class="wk">Week ${a.week} · ${esc(dayName(a.day))}</div>
       <div class="title" style="font-size:21px">${esc(block.label)}</div>
       <div class="progress-track"><div class="progress-fill" style="width:${Math.round(d/t*100)}%"></div></div>
       <div class="small muted">${d} of ${t} sets done</div>
@@ -543,10 +593,10 @@ function renderWorkout(){
           <div class="ex-name">${isSuper?`<span class="ss-tag">SS ${esc(ex.group)}</span>`:""}${esc(ex.name)}</div>
           ${ex.note?`<div class="ex-note">${esc(ex.note)}</div>`:""}
         </div>
-        <div class="ex-presc">${ex.sets}×${presc(ex)} @ ${fmtW(ex.w)} lb</div>
+        <div class="ex-presc">${ex.sets}×${presc(ex)} @ ${fmtW(ex.w)} ${unitOf(ex)}</div>
       </div>`;
     a.acc[ei].sets.forEach((set,si)=>{
-      html+=setRow("acc-"+ei,si,si+1,ex.reps,ex.w,set,ex.timed);
+      html+=setRow("acc-"+ei,si,si+1,ex.reps,ex.w,set,ex.timed,unitOf(ex));
     });
     html+=`</div>`;
   });
@@ -568,17 +618,19 @@ function renderWorkout(){
 
 // How an exercise's prescription reads: "8" for reps, "40 sec" for timed work
 function presc(ex){ return ex.timed ? ex.reps+" sec" : ex.reps; }
+function unitOf(ex){ return ex && ex.unit ? ex.unit : "lb"; }
 
 // A loggable set row (bench + accessories)
-function setRow(scope,idx,num,prescReps,prescW,set,timed){
+function setRow(scope,idx,num,prescReps,prescW,set,timed,unit){
   const done=set.done;
+  const u = unit || "lb";
   return `<div class="set ${done?"done":""}" id="set-${scope}-${idx}">
     <div class="sidx">${num}</div>
     <div class="presc-mini">target<b>${prescReps}${timed?"s":""}×${fmtW(prescW)}</b></div>
     <div class="fld"><label>${timed?"Seconds":"Reps"}</label>
       <input type="number" inputmode="numeric" value="${set.reps}"
         onchange="setField('${scope}',${idx},'reps',this.value)"></div>
-    <div class="fld"><label>Weight (lb)</label>
+    <div class="fld"><label>Weight (${u})</label>
       <input type="number" inputmode="decimal" step="0.5" value="${set.w}"
         onchange="setField('${scope}',${idx},'w',this.value)"></div>
     <button class="chk" onclick="toggleSet('${scope}',${idx})">${done?"✓":""}</button>
@@ -642,19 +694,20 @@ function finishWorkout(){
   const benchTopW=benchDone.length?Math.max(...benchDone.map(x=>x.w)):0;
   const benchReps=benchDone.reduce((s,x)=>s+x.reps,0);
 
-  // Timed work (the sled) counts as sets but not as reps × weight volume
+  // Timed work (the sleds) and kg-loaded work count as sets but not as lb volume
   const accList = blockFor(a.day).accessories;
   let accSets=0,accDone=0,accVol=0;
   a.acc.forEach((g,gi)=>{
-    const timed = !!(accList[gi] && accList[gi].timed);
+    const ex = accList[gi];
+    const skip = !!(ex && (ex.timed || unitOf(ex)!=="lb"));
     g.sets.forEach(x=>{
       accSets++;
-      if(x.done){ accDone++; if(!timed) accVol+=x.reps*x.w; }
+      if(x.done){ accDone++; if(!skip) accVol+=x.reps*x.w; }
     });
   });
 
   state.history.push({
-    finishedAt:Date.now(), day:a.day, blockLabel:a.blockLabel,
+    finishedAt:Date.now(), block:BLOCK_ID, week:a.week, day:a.day, blockLabel:a.blockLabel,
     benchWorkSets:a.bench.length, benchWorkDoneSets:benchDone.length,
     benchVolume:Math.round(benchVol), benchTopWeight:benchTopW, benchReps,
     accSets, accDoneSets:accDone, accVolume:Math.round(accVol),
@@ -688,7 +741,9 @@ function renderProgress(){
   let html="";
   html+=`<div class="card">
     <div class="tiny" style="margin-bottom:8px">Summary</div>
-    <div class="prev-row"><span>Sessions completed</span><span class="v">${h.length}</span></div>
+    <div class="prev-row"><span>Sessions this block</span><span class="v">${
+      h.filter(x=>x.block===BLOCK_ID).length} / ${TOTAL_SESSIONS}</span></div>
+    <div class="prev-row"><span>Sessions logged all-time</span><span class="v">${h.length}</span></div>
     <div class="prev-row"><span>Heaviest bench work weight</span><span class="v">${
       benchHist.length?fmtW(Math.max(...benchHist.map(x=>x.benchTopWeight)))+" lb":"–"}</span></div>
     <div class="prev-row"><span>Total bench volume logged</span><span class="v">${
@@ -713,7 +768,9 @@ function renderProgress(){
     html+=`<div class="hrow">
       <div class="hdot"></div>
       <div class="hmain">
-        <div class="ht">${esc(x.blockLabel)}${x.week?` <span class="muted">· old block, W${x.week}</span>`:""}</div>
+        <div class="ht">${esc(x.blockLabel)}${x.block===BLOCK_ID
+          ? ` <span class="muted">· Week ${x.week}</span>`
+          : ` <span class="muted">· earlier block</span>`}</div>
         <div class="hs">${new Date(x.finishedAt).toLocaleDateString(undefined,
           {month:"short",day:"numeric"})} · ${x.setsDone} sets logged</div>
       </div>
@@ -771,35 +828,54 @@ function lineChart(vals,labels){
 
 function renderPlan(){
   const s=el("screen");
-  const b=benchFor();
   const accRows = list => list.map(a=>`<div class="prev-row">
-      <span>${esc(a.name)}${a.note?` <span class="muted">· ${esc(a.note)}</span>`:""}</span><span class="v">${a.sets}×${presc(a)}${a.w?" @ "+fmtW(a.w)+" lb":""}</span></div>`).join("");
+      <span>${esc(a.name)}${a.note?` <span class="muted">· ${esc(a.note)}</span>`:""}</span><span class="v">${a.sets}×${presc(a)}${a.w?" @ "+fmtW(a.w)+" "+unitOf(a):""}</span></div>`).join("");
 
+  // Bench work sets, all 8 weeks
+  let rows="";
+  for(let w=1;w<=TOTAL_WEEKS;w++){
+    const b1=benchFor(w,1), b2=benchFor(w,2);
+    const cur=(w===state.week && !state.programDone);
+    rows+=`<tr class="${cur?"cur":""}">
+      <td class="${cur?"now":""}">Week ${w}</td>
+      <td>${b1.sets}×${b1.reps}</td>
+      <td>${b2.sets}×${b2.reps}</td>
+      <td>${fmtW(b1.w)} lb</td>
+    </tr>`;
+  }
+
+  // Ramp loads, by week pair
   let ramp="";
-  NEURAL.forEach((x,i)=>{
-    ramp+=`<tr><td>Ramp ${i+1}</td><td>${x.r} ${x.r===1?"rep":"reps"}</td><td>${fmtW(x.w)} lb</td></tr>`;
+  [["1-2","Weeks 1–2"],["3-4","Weeks 3–4"],["5-6","Weeks 5–6"],["7-8","Weeks 7–8"]].forEach(([k,lbl])=>{
+    const cur = RAMP[k]===neuralFor(state.week) && !state.programDone;
+    ramp+=`<tr class="${cur?"cur":""}"><td class="${cur?"now":""}">${lbl}</td>
+      <td>${RAMP[k].map(x=>fmtW(x.w)).join(" · ")}</td></tr>`;
   });
-  ramp+=`<tr class="cur"><td class="now">Work</td><td>${b.sets} × ${b.reps} reps</td><td>${fmtW(b.w)} lb</td></tr>`;
 
   s.innerHTML=`
     <div class="card">
-      <div class="tiny" style="margin-bottom:8px">Bench press – every session</div>
+      <div class="tiny" style="margin-bottom:8px">Bench press – work sets</div>
       <table>
-        <tr><th>Set</th><th>Reps</th><th>Weight</th></tr>
-        ${ramp}
+        <tr><th>Week</th><th>Day 1</th><th>Day 2</th><th>Weight</th></tr>
+        ${rows}
       </table>
-      <div class="small muted" style="margin-top:8px">
-        The ramp and the work sets are the same on Day 1 and Day 2 — no weekly progression in this block.
-      </div>
     </div>
 
     <div class="card">
-      <div class="tiny" style="margin-bottom:8px">Day 1 – accessories</div>
+      <div class="tiny" style="margin-bottom:8px">Bench press – neural warm-up</div>
+      <table>
+        <tr><th>Block</th><th>Ramp loads (5 · 5 · 3 · 1 reps)</th></tr>
+        ${ramp}
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="tiny" style="margin-bottom:8px">Day 1 – ${esc(DAY1.label)}</div>
       ${accRows(DAY1.accessories)}
     </div>
 
     <div class="card">
-      <div class="tiny" style="margin-bottom:8px">Day 2 – accessories</div>
+      <div class="tiny" style="margin-bottom:8px">Day 2 – ${esc(DAY2.label)}</div>
       ${accRows(DAY2.accessories)}
     </div>
 
@@ -837,13 +913,20 @@ function renderSettings(){
     <div class="card">
       <div class="tiny" style="margin-bottom:4px">Next session</div>
       <div class="setrow">
-        <span>Day</span>
-        <select id="setDay" onchange="jumpTo()">
-          <option value="1" ${state.day===1?"selected":""}>Day 1 – bench, split squat, chin-up</option>
-          <option value="2" ${state.day===2?"selected":""}>Day 2 – bench, upper accessories</option>
+        <span>Week</span>
+        <select id="setWeek" onchange="jumpTo()">
+          ${Array.from({length:TOTAL_WEEKS},(_,i)=>i+1).map(w=>
+            `<option ${w===state.week?"selected":""}>${w}</option>`).join("")}
         </select>
       </div>
-      <div class="small muted" style="margin-top:2px">Days alternate on their own after each logged session. Change this if you repeat or skip one.</div>
+      <div class="setrow">
+        <span>Day</span>
+        <select id="setDay" onchange="jumpTo()">
+          <option value="1" ${state.day===1?"selected":""}>Day 1 – ${esc(DAY1.label)}</option>
+          <option value="2" ${state.day===2?"selected":""}>Day 2 – ${esc(DAY2.label)}</option>
+        </select>
+      </div>
+      <div class="small muted" style="margin-top:2px">The app advances on its own after each logged session. Change this if you repeat or skip one.</div>
     </div>
 
     <div class="card">
@@ -861,19 +944,22 @@ function renderSettings(){
     </div>
 
     <div class="small muted" style="text-align:center;padding:6px 0 16px">
-      Bench Block · Gus Blessmann · v3
+      Solo Program · 8 weeks · Gus Blessmann · v4
     </div>`;
 }
 
 function setRest(v){ state.settings.rest=v; save(); render(); }
 function jumpTo(){
+  const w=parseInt(el("setWeek").value,10);
   const d=parseInt(el("setDay").value,10);
-  if(state.active && !confirm("You have a workout in progress. Changing the day will discard it. Continue?")){
+  if(state.active && !confirm("You have a workout in progress. Changing the week or day will discard it. Continue?")){
     render(); return;
   }
   state.active=null;
+  state.week = Math.min(TOTAL_WEEKS, Math.max(1, w||1));
   state.day = (d===2) ? 2 : 1;
-  save(); render(); toast("Next session set to "+dayName(state.day));
+  state.programDone=false;
+  save(); render(); toast("Set to Week "+state.week+", "+dayName(state.day));
 }
 
 function exportData(){
@@ -901,9 +987,9 @@ function importData(input){
   input.value="";
 }
 function resetAll(){
-  if(!confirm("Erase all logged sessions and start over at Day 1?")) return;
+  if(!confirm("Erase all logged sessions and start over at Week 1, Day 1?")) return;
   state=defaultState(); stopRest(); save(); tab="today"; render();
-  toast("Reset to Day 1");
+  toast("Reset to Week 1, Day 1");
 }
 
 /* ---------- nav + toast ---------- */
